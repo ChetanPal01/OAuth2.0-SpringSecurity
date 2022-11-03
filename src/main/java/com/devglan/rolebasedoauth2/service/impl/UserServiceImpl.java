@@ -38,6 +38,8 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
+
+
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
         User user = userDao.findByUsername(userId);
         if(user == null){
@@ -94,6 +96,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         userDto.getRole().stream().map(role -> roleTypes.add(RoleType.valueOf(role)));
         user.setRoles(roleDao.find(userDto.getRole()));
         userDao.save(user);
+        userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
         return userDto;
     }
 }

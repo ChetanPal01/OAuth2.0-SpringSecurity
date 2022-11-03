@@ -38,58 +38,25 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
             return;
         }
 
-//        // create initial privileges
-//        final Privilege readPrivilege = createPrivilegeIfNotFound("READ_ADVERTISEMENT");
-//        final Privilege writePrivilege = createPrivilegeIfNotFound("WRITE_ADVERTISEMENT");
-//
-//        // create initial roles
-//        final List<Privilege> adminPrivileges = new ArrayList<>(Arrays.asList(readPrivilege, writePrivilege));
-//        final List<Privilege> userPrivileges = new ArrayList<>(Arrays.asList(readPrivilege));
-//        final Role adminRole = createRoleIfNotFound("ROLE_ADMIN", adminPrivileges);
-//        final Role userRole = createRoleIfNotFound("ROLE_USER", userPrivileges);
 
         // create initial user
         User user = createUserIfNotFound("Admin", "admin", "admin", "admin", "admin@gmail.com",new ArrayList<>(Arrays.asList("ADMIN")));
-      //  createUserIfNotFound("User", "user", "user", "user", "user@gmail.com", new ArrayList<>(Arrays.asList("USER")));
         alreadySetup = true;
     }
-
-//    @Transactional
-//    Privilege createPrivilegeIfNotFound(final String name) {
-//        Privilege privilege = privilegeRepository.findByName(name);
-//        if (privilege == null) {
-//            privilege = new Privilege(name);
-//            privilege = privilegeRepository.save(privilege);
-//        }
-//        return privilege;
-//    }
-
-//    @Transactional
-//    Role createRoleIfNotFound(final String name, final Collection<Privilege> privileges) {
-//        Role role = roleRepository.findByName(name);
-//        if (role == null) {
-//            role = new Role(name);
-//        }
-//        role.setPrivileges(privileges);
-//        role = roleRepository.save(role);
-//        return role;
-//    }
 
     @Transactional
     User createUserIfNotFound(String firstName, String lastName, String userName, String password, String email, List<String> roles) {
         User userWithDuplicateUsername = userDao.findByUsername(userName);
         if(userWithDuplicateUsername != null) {
-            log.error(String.format("Duplicate username {}", userName));
+            log.error("Duplicate username {}", userName);
             throw new RuntimeException("Duplicate username.");
         }
         User userWithDuplicateEmail = userDao.findByEmail(email);
         if(userWithDuplicateEmail != null) {
-            log.error(String.format("Duplicate email {}", email));
+            log.error("Duplicate email {}", email);
             throw new RuntimeException("Duplicate email.");
         }
-//        Role role = new Role();
-//        role.setName(RoleType.valueOf("ADMIN"));
-//        role.setDescription("Admin");
+
         User user = new User();
         user.setEmail(email);
         user.setFirstName(firstName);
