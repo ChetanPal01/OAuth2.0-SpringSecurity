@@ -3,6 +3,8 @@ package com.devglan.rolebasedoauth2.service.impl;
 import com.devglan.rolebasedoauth2.dao.RoleDao;
 import com.devglan.rolebasedoauth2.dao.UserDao;
 import com.devglan.rolebasedoauth2.dto.UserDto;
+import com.devglan.rolebasedoauth2.exceptions.DatabaseException;
+import com.devglan.rolebasedoauth2.exceptions.DuplicateInfoFoundException;
 import com.devglan.rolebasedoauth2.model.Role;
 import com.devglan.rolebasedoauth2.model.RoleType;
 import com.devglan.rolebasedoauth2.model.User;
@@ -15,7 +17,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,31 +61,43 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     public List<UserDto> findAll() {
         List<UserDto> users = new ArrayList<>();
-        userDao.findAll().iterator().forEachRemaining(user -> users.add(user.toUserDto()));
+        try {
+            userDao.findAll().iterator().forEachRemaining(user -> users.add(user.toUserDto()));
+        }catch (Exception e){
+            throw new DatabaseException("Exception occured while searching for users in databse",e);
+        }
         return users;
     }
 
     @Override
     public User findOne(long id) {
-        return userDao.findById(id).get();
+        try {
+            return userDao.findById(id).get();
+        }catch (Exception e){
+            throw new DatabaseException("No such user found",e);
+        }
     }
 
     @Override
     public void delete(long id) {
-        userDao.deleteById(id);
+        try {
+            userDao.deleteById(id);
+        }catch (Exception e){
+            throw new DatabaseException("User not found to perform delete operation",e);
+        }
     }
 
     @Override
     public UserDto save(UserDto userDto) {
         User userWithDuplicateUsername = userDao.findByUsername(userDto.getUsername());
         if(userWithDuplicateUsername != null && userDto.getId() != userWithDuplicateUsername.getId()) {
-            log.error(String.format("Duplicate username %", userDto.getUsername()));
-            throw new RuntimeException("Duplicate username.");
+            log.error("Duplicate username {}", userDto.getUsername());
+            throw new DuplicateInfoFoundException("Duplicate username.");
         }
         User userWithDuplicateEmail = userDao.findByEmail(userDto.getEmail());
         if(userWithDuplicateEmail != null && userDto.getId() != userWithDuplicateEmail.getId()) {
-            log.error(String.format("Duplicate email %", userDto.getEmail()));
-            throw new RuntimeException("Duplicate email.");
+            log.error("Duplicate email {}", userDto.getEmail());
+            throw new DuplicateInfoFoundException("Duplicate email.");
         }
         User user = new User();
         user.setEmail(userDto.getEmail());
@@ -95,7 +108,11 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         List<RoleType> roleTypes = new ArrayList<>();
         userDto.getRole().stream().map(role -> roleTypes.add(RoleType.valueOf(role)));
         user.setRoles(roleDao.find(userDto.getRole()));
-        userDao.save(user);
+        try {
+            userDao.save(user);
+        }catch (Exception e){
+            throw new DatabaseException("Exception occured while saving into the Database", e);
+        }
         userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
         return userDto;
     }
