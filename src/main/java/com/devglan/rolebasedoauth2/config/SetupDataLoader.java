@@ -2,6 +2,8 @@ package com.devglan.rolebasedoauth2.config;
 
 import com.devglan.rolebasedoauth2.dao.RoleDao;
 import com.devglan.rolebasedoauth2.dao.UserDao;
+import com.devglan.rolebasedoauth2.exceptions.DatabaseException;
+import com.devglan.rolebasedoauth2.exceptions.DuplicateInfoFoundException;
 import com.devglan.rolebasedoauth2.model.Role;
 import com.devglan.rolebasedoauth2.model.RoleType;
 import com.devglan.rolebasedoauth2.model.User;
@@ -49,12 +51,12 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         User userWithDuplicateUsername = userDao.findByUsername(userName);
         if(userWithDuplicateUsername != null) {
             log.error("Duplicate username {}", userName);
-            throw new RuntimeException("Duplicate username.");
+            throw new DuplicateInfoFoundException("Duplicate username.");
         }
         User userWithDuplicateEmail = userDao.findByEmail(email);
         if(userWithDuplicateEmail != null) {
             log.error("Duplicate email {}", email);
-            throw new RuntimeException("Duplicate email.");
+            throw new DuplicateInfoFoundException("Duplicate email.");
         }
 
         User user = new User();
@@ -66,7 +68,11 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         List<RoleType> roleTypes = new ArrayList<>();
         roles.stream().map(role -> roleTypes.add(RoleType.valueOf(role)));
         user.setRoles(roleDao.find(roles));
-        userDao.save(user);
+        try {
+            userDao.save(user);
+        }catch (Exception e){
+            throw new DatabaseException("Exception occured while saving into the Database", e);
+        }
         return user;
     }
 
