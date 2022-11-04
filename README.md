@@ -24,7 +24,7 @@ When using OAuth2, grant type is the way an application gets the access token. T
 4. Client credentials grant - (Machine to machine authentication example Trivago making call to make my trip, booking.com etc to show the data)
 Refresh token grant
 
-![img_1.png](img_1.png)
+![](src/main/resources/Oauth-Flow.jpg)
 
 ### In this application :
 
@@ -33,3 +33,4 @@ The resource owner will then using OAuth authorize the resource server to share 
 The client application must first register with the authorization server associated with the resource server. This is usually a one-time task. Once registered, 
 the registration remains valid, unless the client application registration is revoked. At registration the client application is assigned a client ID and a 
 client secret (password) by the authorization server. The client ID and secret is unique to the client application on that authorization server.
+        
