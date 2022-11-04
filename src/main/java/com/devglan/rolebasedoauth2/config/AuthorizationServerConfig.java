@@ -44,9 +44,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 	@Override
 	public void configure(ClientDetailsServiceConfigurer configurer) throws Exception {
 
-//		configurer.inMemory().withClient("javainuse-client").secret("javainuse-secret")
-//				.authorizedGrantTypes("authorization_code", "refresh_token", "password").scopes("read", "write");
-
 		configurer
 				.inMemory()
 				.withClient(CLIEN_ID)
