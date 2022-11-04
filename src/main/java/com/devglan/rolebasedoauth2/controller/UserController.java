@@ -13,14 +13,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
+import static com.devglan.rolebasedoauth2.constant.AuthConstants.*;
+
 @RestController
 @RequestMapping("/users")
 @Log
 public class UserController {
-
-    public static final String SUCCESS = "success";
-    public static final String ROLE_ADMIN = "ROLE_ADMIN";
-    public static final String ROLE_USER = "ROLE_USER";
 
     @Autowired
     private UserService userService;

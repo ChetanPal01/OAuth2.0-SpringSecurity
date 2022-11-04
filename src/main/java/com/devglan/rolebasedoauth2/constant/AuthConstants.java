@@ -10,4 +10,8 @@ public class AuthConstants {
     public static final String SCOPE_WRITE = "write";
     public static final String TRUST = "trust";
 
+    public static final String SUCCESS = "success";
+    public static final String ROLE_ADMIN = "ROLE_ADMIN";
+    public static final String ROLE_USER = "ROLE_USER";
+
 }
